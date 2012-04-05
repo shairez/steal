@@ -1,4 +1,4 @@
-steal({src: "./less_engine.js",ignore: true},function(){
+steal({src: "./less/dist/less-1.3.0.js",ignore: true},function(){
 	
 	/**
 	 * @page steal.less Less
