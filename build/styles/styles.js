@@ -48,7 +48,15 @@ steal('steal/build').then(function( steal ) {
 		//how do we go from prod to css
 		var cssLoc = new steal.File(cssLocation).dir(),
 			newCSS = css.replace(/url\(['"]?([^'"\)]*)['"]?\)/g, function( whole, part ) {
-
+				
+				
+				// HACK - NEED TO FIX IT BEFORE IT ARRIVES HERE
+				var indexOfRelative = part.lastIndexOf("../");
+				if (indexOfRelative !== -1){
+					part = part.slice(indexOfRelative);
+					return  "url(" + part + ")";
+				}
+				
 				//check if url is relative
 				if (isAbsoluteOrData(part) ) {
 					return whole
