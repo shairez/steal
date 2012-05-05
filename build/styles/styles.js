@@ -42,19 +42,46 @@ steal('steal/build').then(function( steal ) {
 			dependencies: scriptsConverted
 		}
 	});
-
+	var sliceBackwards = function(numOfBackwards, path){
+		
+		if (numOfBackwards === 0){
+			return path;
+		}
+		var pathParts = path.split("/");
+		var pathPartsLength = pathParts.length;
+		var pathIndex = pathPartsLength - numOfBackwards;
+		var finalPath = pathParts.slice(0,pathIndex).join("/");
+		return (finalPath.length > 0) ? finalPath + "/" : finalPath;
+	};
+	
+	var convertPathToBackwars = function(path){
+		var result = "";
+		var pathPartsLength = path.split("/").length;
+		for (var i=0; i< pathPartsLength; i++){
+			result += "../";
+		}
+		return result;
+	};
+	
 	//used to convert css referencs in one file so they will make sense from prodLocation
 	var convert = function( css, cssLocation, prodLocation ) {
 		//how do we go from prod to css
 		var cssLoc = new steal.File(cssLocation).dir(),
 			newCSS = css.replace(/url\(['"]?([^'"\)]*)['"]?\)/g, function( whole, part ) {
 				
-				
 				// HACK - NEED TO FIX IT BEFORE IT ARRIVES HERE
-				var indexOfRelative = part.lastIndexOf("../");
-				if (indexOfRelative !== -1){
-					part = part.slice(indexOfRelative);
-					return  "url(" + part + ")";
+				var firstIndexOfRelative = part.indexOf("../", part.indexOf(cssLoc));
+				
+				if (firstIndexOfRelative !== -1){
+					var lastIndexOfRelative = part.lastIndexOf("../");
+					var numOfBackwards = 1;
+					if (firstIndexOfRelative != lastIndexOfRelative){
+						
+						numOfBackwards = (lastIndexOfRelative+3-firstIndexOfRelative) /3;
+					}
+					part = part.slice(lastIndexOfRelative+3);
+					var finalPath = convertPathToBackwars(prodLocation) + sliceBackwards(numOfBackwards, cssLoc) + part;
+					return  "url(" + finalPath + ")";
 				}
 				
 				//check if url is relative
