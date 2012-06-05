@@ -38,7 +38,7 @@ steal('steal/build').then(function( steal ) {
 		}
 		
 		return {
-			name: folder+"/production.css",
+			name: folder+"/production.css?v=" + new Date().getTime(),
 			dependencies: scriptsConverted
 		}
 	});
